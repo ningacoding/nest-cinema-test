@@ -1,10 +1,12 @@
 import {
   AutoIncrement,
   Column,
+  HasMany,
   Model,
   PrimaryKey,
   Table,
 } from 'sequelize-typescript';
+import MovieFunction from './movie.function.entity';
 
 /**
  * Representa la película disponible.
@@ -30,4 +32,7 @@ export default class Movie extends Model {
     allowNull: false,
   })
   durationInMinutes: number;
+
+  @HasMany(() => MovieFunction)
+  movieFunctions: MovieFunction[];
 }

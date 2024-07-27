@@ -44,10 +44,13 @@ export class MoviesService {
   /**
    * Método para obtener todas las películas
    */
-  findAll() {
-    return Movie.findAll({
-      raw: true,
+  async findAll() {
+    const moviesIds = await Movie.findAll({
+      attributes: ['id'],
     });
+    return await Promise.all(
+      moviesIds.map((movie) => this.getMovieData(movie.id)),
+    );
   }
 
   /**
