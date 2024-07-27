@@ -4,6 +4,7 @@ import Auditorium from '../entities/auditorium.entity';
 import Booking from '../entities/booking.entity';
 import Movie from '../entities/movie.entity';
 import MovieFunction from '../entities/movie.function.entity';
+import PurchaseHistory from '../entities/purchase.history.entity';
 import Role from '../entities/role.entity';
 import Seat from '../entities/seat.entity';
 import User from '../entities/user.entity';
@@ -20,7 +21,16 @@ export const databaseProviders = [
         username: configService.get<string>('database.username'),
         password: configService.get<string>('database.password'),
         database: configService.get<string>('database.database'),
-        models: [Role, Movie, Auditorium, User, Booking, Seat, MovieFunction],
+        models: [
+          Role,
+          Movie,
+          Auditorium,
+          User,
+          Booking,
+          Seat,
+          MovieFunction,
+          PurchaseHistory,
+        ],
         logQueryParameters: true,
         ssl: true,
         dialectOptions: {

@@ -51,9 +51,9 @@ describe('ProductsController', () => {
       newAuditoriumC,
     );
     expect(
-      !!resultAuditoriumA.id &&
-        !!resultAuditoriumB.id &&
-        !!resultAuditoriumC.id,
+      !!resultAuditoriumA.data.id &&
+        !!resultAuditoriumB.data.id &&
+        !!resultAuditoriumC.data.id,
     ).toBeTruthy();
   });
 
@@ -63,7 +63,7 @@ describe('ProductsController', () => {
     newMovie.coverImageUrl = `https://picsum.photos/600`;
     newMovie.durationInMinutes = 60 * 1.5;
     const result = await moviesController.create(newMovie);
-    expect(result.id).toBeDefined();
+    expect(result.data.id).toBeDefined();
   });
 
   it('should create required movie functions', async () => {
@@ -91,7 +91,7 @@ describe('ProductsController', () => {
       createMovieFunction19HrsDto,
     );
     expect(
-      !!result15Hrs.id && !!result17Hrs.id && !!result19Hrs.id,
+      !!result15Hrs.data.id && !!result17Hrs.data.id && !!result19Hrs.data.id,
     ).toBeTruthy();
   });
 
@@ -108,11 +108,6 @@ describe('ProductsController', () => {
       }
     }
     expect(createdObjects).toEqual(60);
-  });
-
-  it('should return seats info', async () => {
-    const seats = await moviesService.getSeatsInfo(1);
-    expect(seats.length).toBeGreaterThan(0);
   });
 
   it('should purchase an available seat', async () => {

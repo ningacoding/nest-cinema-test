@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as moment from 'moment';
+import { Op } from 'sequelize';
 import { CreateAuditoriumDto } from '../dto/movies/create.auditorium.dto';
 import { CreateMovieDto } from '../dto/movies/create.movie.dto';
 import { CreateMovieFunctionDto } from '../dto/movies/create.movie.function.dto';
@@ -9,6 +10,7 @@ import Auditorium from '../entities/auditorium.entity';
 import Booking from '../entities/booking.entity';
 import Movie from '../entities/movie.entity';
 import MovieFunction from '../entities/movie.function.entity';
+import PurchaseHistory from '../entities/purchase.history.entity';
 import Seat from '../entities/seat.entity';
 import User from '../entities/user.entity';
 
@@ -205,7 +207,12 @@ export class MoviesService {
         seatId,
       });
     }
-    return Booking.bulkCreate(bulkCreate);
+    const result = await Booking.bulkCreate(bulkCreate);
+    const purchaseHistory = await PurchaseHistory.create({
+      userId,
+      bookingsIds: result.map((r) => r.id),
+    });
+    return purchaseHistory.toJSON();
   }
 
   /**
@@ -255,5 +262,56 @@ export class MoviesService {
       ],
     });
     return booking.toJSON();
+  }
+
+  async getPurchaseById(userId: number, purchaseId: string) {
+    const purchaseHistory = await PurchaseHistory.findOne({
+      where: {
+        id: purchaseId,
+        userId,
+      },
+    });
+    if (!purchaseHistory) {
+      throw new Error('Purchase was not found');
+    }
+    const bookings = await Booking.findAll({
+      where: {
+        id: {
+          [Op.in]: purchaseHistory.bookingsIds,
+        },
+      },
+      include: [
+        {
+          model: Seat,
+        },
+      ],
+    });
+    if (bookings.length === 0) {
+      throw new Error('No reservations found');
+    }
+    const movieFunctionId = bookings[0].movieFunctionId;
+    const movieFunction = await MovieFunction.findByPk(movieFunctionId, {
+      include: [
+        {
+          model: Movie,
+        },
+      ],
+    });
+    const auditoriumId = bookings[0].seat.auditoriumId;
+    const auditorium = await Auditorium.findByPk(auditoriumId);
+    const seats = await Seat.findAll({
+      where: {
+        id: {
+          [Op.in]: bookings.map((b) => b.seatId),
+        },
+      },
+    });
+    return {
+      purchaseId,
+      scheduledDate: bookings[0].scheduledDate,
+      movieFunction: movieFunction.toJSON(),
+      auditorium: auditorium.toJSON(),
+      seats: seats.map((s) => s.toJSON()),
+    };
   }
 }

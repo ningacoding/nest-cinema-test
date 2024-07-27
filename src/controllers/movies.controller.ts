@@ -22,6 +22,7 @@ import { AuditoriumSerializer } from '../serializers/auditorium.serializer';
 import { BookingSerializer } from '../serializers/booking.serializer';
 import { MovieFunctionSerializer } from '../serializers/movie.function.serializer';
 import { MovieSerializer } from '../serializers/movie.serializer';
+import { PurchaseHistorySerializer } from '../serializers/purchase.history.serializer';
 import { SeatSerializer } from '../serializers/seat.serializer';
 import { MoviesService } from '../services/movies.service';
 import { SuperController } from './super.controller';
@@ -106,7 +107,7 @@ export class MoviesController extends SuperController {
         req.user.id,
         movieSeatsPurchaseDto,
       ),
-      SeatSerializer,
+      PurchaseHistorySerializer,
     );
   }
 
@@ -132,6 +133,15 @@ export class MoviesController extends SuperController {
     return super.success(
       await this.moviesService.getBookingById(+id),
       BookingSerializer,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('purchase/:id')
+  async getPurchaseId(@Request() req, @Param('id') id: string) {
+    return super.success(
+      await this.moviesService.getPurchaseById(req.user.id, id),
+      PurchaseHistorySerializer,
     );
   }
 }
