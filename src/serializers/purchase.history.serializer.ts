@@ -6,6 +6,9 @@ import { SeatSerializer } from './seat.serializer';
 @Exclude()
 export class PurchaseHistorySerializer {
   @Expose()
+  id: string;
+
+  @Expose()
   purchaseId: string;
 
   @Expose()
