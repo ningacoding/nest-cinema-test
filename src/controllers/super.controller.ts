@@ -3,7 +3,7 @@ import {
   BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { classToPlain } from 'class-transformer';
+import { instanceToPlain } from 'class-transformer';
 import { ResponseSerializer } from '../serializers/response.serializer';
 import { Serializer } from '../serializers/serializer';
 import { PaginationType } from '../types/pagination.type';
@@ -30,10 +30,14 @@ export class SuperController {
       if (Array.isArray(dataParam)) {
         data = [];
         for (const dat of dataParam) {
-          data.push(classToPlain(SuperController.createInstance(dat, clazz)));
+          data.push(
+            instanceToPlain(SuperController.createInstance(dat, clazz)),
+          );
         }
       } else {
-        data = classToPlain(SuperController.createInstance(dataParam, clazz));
+        data = instanceToPlain(
+          SuperController.createInstance(dataParam, clazz),
+        );
       }
     } else {
       data = dataParam;

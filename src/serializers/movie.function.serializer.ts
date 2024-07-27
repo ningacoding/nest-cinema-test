@@ -1,9 +1,8 @@
 import { Exclude, Expose } from 'class-transformer';
 import * as moment from 'moment';
-import { Serializer } from './serializer';
 
 @Exclude()
-export class MovieFunctionSerializer extends Serializer {
+export class MovieFunctionSerializer {
   private readonly shownAt24HoursFormat: number;
 
   private readonly shownAtMinutes: number;
@@ -14,15 +13,15 @@ export class MovieFunctionSerializer extends Serializer {
   @Expose()
   movieId: number;
 
-  constructor(partial: any) {
-    super(partial, MovieFunctionSerializer);
+  constructor(partial: Partial<MovieFunctionSerializer>) {
+    Object.assign(this, partial);
   }
 
   @Expose({ name: 'shownAt' })
   getShownAt() {
-    return moment()
-      .hour(this.shownAt24HoursFormat)
-      .minute(this.shownAtMinutes)
-      .format('HH:mm');
+    return moment(
+      `${this.shownAt24HoursFormat}:${this.shownAtMinutes}`,
+      'HH:mm',
+    ).format('HH:mm');
   }
 }

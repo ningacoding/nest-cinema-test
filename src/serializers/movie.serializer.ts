@@ -1,13 +1,8 @@
-import { Exclude, Expose } from 'class-transformer';
-import MovieFunction from '../entities/movie.function.entity';
-import { Clazz } from '../utils/clazz';
+import { Exclude, Expose, Transform } from 'class-transformer';
 import { MovieFunctionSerializer } from './movie.function.serializer';
-import { Serializer } from './serializer';
 
 @Exclude()
-export class MovieSerializer extends Serializer {
-  private readonly movieFunctions: MovieFunction[];
-
+export class MovieSerializer {
   @Expose()
   id: number;
 
@@ -17,14 +12,16 @@ export class MovieSerializer extends Serializer {
   @Expose()
   durationInMinutes: number;
 
-  constructor(partial: any) {
-    super(partial, MovieSerializer);
-  }
+  @Transform(({ obj }) =>
+    obj?.movieFunctions?.map(
+      (movieFunction: Partial<MovieFunctionSerializer>) =>
+        new MovieFunctionSerializer(movieFunction),
+    ),
+  )
+  @Expose()
+  movieFunctions: MovieFunctionSerializer[];
 
-  @Expose({ name: 'movieFunctions' })
-  getMovieFunctions() {
-    return this.movieFunctions.map((movieFunction) =>
-      Clazz.serialize(movieFunction, MovieFunctionSerializer),
-    );
+  constructor(partial: Partial<MovieSerializer>) {
+    Object.assign(this, partial);
   }
 }

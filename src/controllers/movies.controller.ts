@@ -18,7 +18,10 @@ import { CreateMovieFunctionDto } from '../dto/movies/create.movie.function.dto'
 import { MovieSeatsPurchaseDto } from '../dto/movies/movie.seats.purchase.dto';
 import { JwtAuthGuard } from '../guards/jwt.auth.guard';
 import { RolesGuard } from '../guards/roles.guard';
+import { AuditoriumSerializer } from '../serializers/auditorium.serializer';
+import { MovieFunctionSerializer } from '../serializers/movie.function.serializer';
 import { MovieSerializer } from '../serializers/movie.serializer';
+import { SeatSerializer } from '../serializers/seat.serializer';
 import { MoviesService } from '../services/movies.service';
 import { SuperController } from './super.controller';
 
@@ -29,58 +32,81 @@ export class MoviesController extends SuperController {
     super();
   }
 
+  @Get()
+  async findAll() {
+    return super.success(await this.moviesService.findAll(), MovieSerializer);
+  }
+
+  @Get('/auditoriums')
+  async findAllAuditoriums() {
+    return super.success(
+      await this.moviesService.findAllAuditoriums(),
+      AuditoriumSerializer,
+    );
+  }
+
   @UseGuards(JwtAuthGuard)
   @Roles(RoleEnum.Admin)
   @Post()
-  create(@Body() createMovieDto: CreateMovieDto, @Request() req?) {
-    return this.moviesService.create(req?.user?.id, createMovieDto);
+  async create(@Body() createMovieDto: CreateMovieDto, @Request() req?) {
+    return super.success(
+      await this.moviesService.create(req?.user?.id, createMovieDto),
+      MovieSerializer,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
   @Roles(RoleEnum.Admin)
   @Post('/auditorium')
-  createAuditorium(@Body() createAuditoriumDto: CreateAuditoriumDto) {
-    return this.moviesService.createAuditorium(createAuditoriumDto);
+  async createAuditorium(@Body() createAuditoriumDto: CreateAuditoriumDto) {
+    return super.success(
+      await this.moviesService.createAuditorium(createAuditoriumDto),
+      AuditoriumSerializer,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
   @Roles(RoleEnum.Admin)
   @Post('/function')
-  createMovieFunction(@Body() createMovieFunctionDto: CreateMovieFunctionDto) {
-    return this.moviesService.createMovieFunction(createMovieFunctionDto);
+  async createMovieFunction(
+    @Body() createMovieFunctionDto: CreateMovieFunctionDto,
+  ) {
+    return super.success(
+      await this.moviesService.createMovieFunction(createMovieFunctionDto),
+      MovieFunctionSerializer,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('seats/:movieFunctionId/:auditoriumId/:date')
-  getSeatsInfo(
+  async getSeatsInfo(
     @Param('movieFunctionId', ParseIntPipe) movieFunctionId: number,
     @Param('auditoriumId', ParseIntPipe) auditoriumId: number,
     @Param('date') dateString: string,
   ) {
-    return this.moviesService.getSeatsInfo(
-      movieFunctionId,
-      auditoriumId,
-      moment(dateString, 'DD-MM-YYYY').toDate(),
+    return super.success(
+      await this.moviesService.getSeatsInfo(
+        movieFunctionId,
+        auditoriumId,
+        moment(dateString, 'DD-MM-YYYY').toDate(),
+      ),
+      SeatSerializer,
     );
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('seats/purchase')
-  postSeatsPurchase(
+  async postSeatsPurchase(
     @Request() req,
     @Body() movieSeatsPurchaseDto: MovieSeatsPurchaseDto,
   ) {
-    return this.moviesService.seatsPurchase(req.user.id, movieSeatsPurchaseDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.moviesService.findAll();
-  }
-
-  @Get('/auditoriums')
-  findAllAuditoriums() {
-    return this.moviesService.findAllAuditoriums();
+    return super.success(
+      await this.moviesService.seatsPurchase(
+        req.user.id,
+        movieSeatsPurchaseDto,
+      ),
+      SeatSerializer,
+    );
   }
 
   @UseGuards(JwtAuthGuard)

@@ -24,7 +24,7 @@ export class UsersService {
   findAllProviders() {
     return User.findAll({
       where: {
-        [Op.or]: [{ roleId: RoleEnum.Admin }, { roleId: RoleEnum.Seller }],
+        [Op.or]: [{ roleId: RoleEnum.Admin }, { roleId: RoleEnum.Common }],
       },
     });
   }

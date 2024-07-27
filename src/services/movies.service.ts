@@ -44,22 +44,28 @@ export class MoviesService {
    * Método para obtener todas las películas
    */
   findAll() {
-    return Movie.findAll();
+    return Movie.findAll({
+      raw: true,
+    });
   }
 
   /**
-   * Método para obtener una película por id
+   * Método para obtener una película por ID
    * @param id
    */
   findOne(id: number) {
-    return Movie.findByPk(id);
+    return Movie.findByPk(id, {
+      raw: true,
+    });
   }
 
   /**
    * Método para obtener todos los Auditoriums
    */
   findAllAuditoriums() {
-    return Auditorium.findAll();
+    return Auditorium.findAll({
+      raw: true,
+    });
   }
 
   /**
@@ -169,6 +175,11 @@ export class MoviesService {
     });
   }
 
+  /**
+   * Método para comprar varios Seats disponibles
+   * @param userId
+   * @param movieSeatsPurchaseDto
+   */
   async seatsPurchase(
     userId: number,
     movieSeatsPurchaseDto: MovieSeatsPurchaseDto,
