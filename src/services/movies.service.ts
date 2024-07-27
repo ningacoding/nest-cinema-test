@@ -10,6 +10,7 @@ import Booking from '../entities/booking.entity';
 import Movie from '../entities/movie.entity';
 import MovieFunction from '../entities/movie.function.entity';
 import Seat from '../entities/seat.entity';
+import User from '../entities/user.entity';
 
 @Injectable()
 export class MoviesService {
@@ -219,5 +220,37 @@ export class MoviesService {
       ...movie.toJSON(),
       movieFunctions: movieFunctions.map((mf) => mf.toJSON()),
     };
+  }
+
+  /**
+   * Obtiene la información de Booking por su ID
+   * @param bookingId
+   */
+  async getBookingById(bookingId: number) {
+    const booking = await Booking.findByPk(bookingId, {
+      include: [
+        {
+          model: User,
+          as: 'booker',
+        },
+        {
+          model: Seat,
+          include: [
+            {
+              model: Auditorium,
+            },
+          ],
+        },
+        {
+          model: MovieFunction,
+          include: [
+            {
+              model: Movie,
+            },
+          ],
+        },
+      ],
+    });
+    return booking.toJSON();
   }
 }

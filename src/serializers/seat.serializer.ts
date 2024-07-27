@@ -1,4 +1,5 @@
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude, Expose, Type } from 'class-transformer';
+import { AuditoriumSerializer } from './auditorium.serializer';
 
 @Exclude()
 export class SeatSerializer {
@@ -16,6 +17,10 @@ export class SeatSerializer {
 
   @Expose()
   seatNumber: number;
+
+  @Expose()
+  @Type(() => AuditoriumSerializer)
+  auditorium: AuditoriumSerializer;
 
   constructor(partial: Partial<SeatSerializer>) {
     Object.assign(this, partial);

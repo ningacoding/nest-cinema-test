@@ -19,6 +19,7 @@ import { MovieSeatsPurchaseDto } from '../dto/movies/movie.seats.purchase.dto';
 import { JwtAuthGuard } from '../guards/jwt.auth.guard';
 import { RolesGuard } from '../guards/roles.guard';
 import { AuditoriumSerializer } from '../serializers/auditorium.serializer';
+import { BookingSerializer } from '../serializers/booking.serializer';
 import { MovieFunctionSerializer } from '../serializers/movie.function.serializer';
 import { MovieSerializer } from '../serializers/movie.serializer';
 import { SeatSerializer } from '../serializers/seat.serializer';
@@ -123,5 +124,14 @@ export class MoviesController extends SuperController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.moviesService.remove(+id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('booking/:id')
+  async getBookingById(@Param('id') id: string) {
+    return super.success(
+      await this.moviesService.getBookingById(+id),
+      BookingSerializer,
+    );
   }
 }
