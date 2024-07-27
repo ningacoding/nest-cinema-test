@@ -10,6 +10,9 @@ export class MovieSerializer {
   name: string;
 
   @Expose()
+  coverImageUrl: string;
+
+  @Expose()
   durationInMinutes: number;
 
   @Transform(({ obj }) =>
